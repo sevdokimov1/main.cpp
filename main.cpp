@@ -17,7 +17,6 @@ public:
         } else {
             history_file = ".kubsh_history";
         }
-        
         loadHistory();
     }
 
@@ -37,11 +36,12 @@ public:
                 break;
             }
             
-            if (!input.empty()) {
+            if (input.find("echo ") == 0) {
+                processEcho(input);
+            } else if (!input.empty()) {
                 addToHistory(input);
+                std::cout << input << std::endl;
             }
-            
-            std::cout << input << std::endl;
         }
         
         saveHistory();
@@ -49,6 +49,18 @@ public:
     }
 
 private:
+    void processEcho(const std::string& input) {
+        std::string text = input.substr(5);
+        
+        if ((text.front() == '"' && text.back() == '"') || 
+            (text.front() == '\'' && text.back() == '\'')) {
+            text = text.substr(1, text.length() - 2);
+        }
+        
+        addToHistory(input);
+        std::cout << text << std::endl;
+    }
+    
     void addToHistory(const std::string& command) {
         history.push_back(command);
     }
